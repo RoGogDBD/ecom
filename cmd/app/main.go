@@ -1,6 +1,11 @@
 package main
 
 func main() {
-	// TODO: Конфигурация и запуск приложения
-	// TODO: Graceful shutdown
+	// TODO: Загружаем конфиг.
+	// TODO: Инициализация логгера.
+	// TODO: Запуск основной логики приложения.
+}
+
+func run() error {
+
 }
