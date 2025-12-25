@@ -70,8 +70,8 @@ func (c *Config) parseFile(path string) (err error) {
 
 	// В данном случае вполне уместно игнорировать ошибку закрытия файла,
 	// так как мы всё равно возвращаем ошибку из Decode. Как по мне - это холиварный вопрос.
-	// Мою мысль хорошо описывает пост с Reddit: https://www.reddit.com/r/golang/comments/yrgths/comment/ivu2k9s/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button.
-	// Но что бы литр не ругался, используем анонимную функцию для закрытия файла.
+	// Мою мысль описывает пост с Reddit по этой теме: https://www.reddit.com/r/golang/comments/yrgths/comment/ivu2k9s/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button.
+	// Но что бы линтр не ругался, используем анонимную функцию для закрытия файла.
 	defer func() {
 		closeErr := file.Close()
 		if err == nil {
@@ -90,11 +90,9 @@ func (c *Config) overrideFromEnv() error {
 	}
 
 	if portStr := os.Getenv(envServerPort); portStr != "" {
-		port, err := strconv.Atoi(portStr)
-		if err != nil {
-			return fmt.Errorf("invalid %s value '%s': %w", envServerPort, portStr, err)
+		if port, err := strconv.Atoi(portStr); err == nil {
+			c.Server.Port = port
 		}
-		c.Server.Port = port
 	}
 
 	return nil
