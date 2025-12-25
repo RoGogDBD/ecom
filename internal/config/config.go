@@ -29,7 +29,8 @@ type (
 	}
 )
 
-func NewLoad() *Config {
+// NewDefault возвращает конфигурацию с дефолтными значениями.
+func NewDefault() *Config {
 	return &Config{
 		Server: ServerConfig{
 			Host: defaultHost,
@@ -40,7 +41,7 @@ func NewLoad() *Config {
 
 // Load загружает и возвращает конфигурацию приложения.
 func Load() (*Config, error) {
-	cfg := NewLoad()
+	cfg := NewDefault()
 	path := parseOptions()
 
 	if path != "" {
@@ -49,7 +50,9 @@ func Load() (*Config, error) {
 		}
 	}
 
-	cfg.overrideFromEnv()
+	if err := cfg.overrideFromEnv(); err != nil {
+		return nil, err
+	}
 
 	if err := cfg.validate(); err != nil {
 		return nil, err
@@ -81,14 +84,18 @@ func (c *Config) parseFile(path string) (err error) {
 	return
 }
 
-func (c *Config) overrideFromEnv() {
+func (c *Config) overrideFromEnv() error {
 	if host := os.Getenv(envServerHost); host != "" {
 		c.Server.Host = host
 	}
 
 	if portStr := os.Getenv(envServerPort); portStr != "" {
-		if port, err := strconv.Atoi(portStr); err == nil {
-			c.Server.Port = port
+		port, err := strconv.Atoi(portStr)
+		if err != nil {
+			return fmt.Errorf("invalid %s value '%s': %w", envServerPort, portStr, err)
 		}
+		c.Server.Port = port
 	}
+
+	return nil
 }
