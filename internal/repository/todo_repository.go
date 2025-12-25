@@ -20,8 +20,8 @@ type (
 	}
 )
 
-// NewToDoStorage создает и возвращает новый экземпляр ToDoStorage.
-func NewToDoStorage() *TodoStorage {
+// NewTodoStorage создает и возвращает новый экземпляр ToDoStorage.
+func NewTodoStorage() *TodoStorage {
 	return &TodoStorage{
 		items: make(map[int]models.Todo),
 	}
