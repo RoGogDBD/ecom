@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"errors"
 	"sync"
 
@@ -28,7 +29,7 @@ func NewTodoStorage() *TodoStorage {
 }
 
 // Create добавляет новый объект в хранилище.
-func (s *TodoStorage) Create(todo models.Todo) error {
+func (s *TodoStorage) Create(_ context.Context, todo models.Todo) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -41,12 +42,12 @@ func (s *TodoStorage) Create(todo models.Todo) error {
 }
 
 // Update обновляет существующий объект в хранилище.
-func (s *TodoStorage) Update(todo models.Todo) error {
+func (s *TodoStorage) Update(_ context.Context, todo models.Todo) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	if _, exists := s.items[todo.ID]; !exists {
-		return errDuplicateID
+		return errNotFound
 	}
 
 	s.items[todo.ID] = todo
@@ -54,7 +55,7 @@ func (s *TodoStorage) Update(todo models.Todo) error {
 }
 
 // Delete удаляет объект из хранилища по его ID.
-func (s *TodoStorage) Delete(id int) error {
+func (s *TodoStorage) Delete(_ context.Context, id int) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -67,7 +68,7 @@ func (s *TodoStorage) Delete(id int) error {
 }
 
 // GetAll возвращает все объекты из хранилища.
-func (s *TodoStorage) GetAll() []models.Todo {
+func (s *TodoStorage) GetAll(_ context.Context) ([]models.Todo, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -76,11 +77,11 @@ func (s *TodoStorage) GetAll() []models.Todo {
 		result = append(result, todo)
 	}
 
-	return result
+	return result, nil
 }
 
 // GetByID возвращает объект по его ID.
-func (s *TodoStorage) GetByID(id int) (models.Todo, error) {
+func (s *TodoStorage) GetByID(_ context.Context, id int) (models.Todo, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
