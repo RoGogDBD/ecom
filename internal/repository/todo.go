@@ -13,22 +13,22 @@ var (
 )
 
 type (
-	// ToDoStorage потокобезопасное хранилище для объектов models.Todo.
-	ToDoStorage struct {
+	// TodoStorage потокобезопасное хранилище для объектов models.Todo.
+	TodoStorage struct {
 		mu    sync.RWMutex
 		items map[int]models.Todo
 	}
 )
 
 // NewToDoStorage создает и возвращает новый экземпляр ToDoStorage.
-func NewToDoStorage() *ToDoStorage {
-	return &ToDoStorage{
+func NewToDoStorage() *TodoStorage {
+	return &TodoStorage{
 		items: make(map[int]models.Todo),
 	}
 }
 
 // Create добавляет новый объект в хранилище.
-func (s *ToDoStorage) Create(todo models.Todo) error {
+func (s *TodoStorage) Create(todo models.Todo) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -40,8 +40,20 @@ func (s *ToDoStorage) Create(todo models.Todo) error {
 	return nil
 }
 
+func (s *TodoStorage) Update(todo models.Todo) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if _, exists := s.items[todo.ID]; !exists {
+		return errDuplicateID
+	}
+
+	s.items[todo.ID] = todo
+	return nil
+}
+
 // GetAll возвращает все объекты из хранилища.
-func (s *ToDoStorage) GetAll() []models.Todo {
+func (s *TodoStorage) GetAll() []models.Todo {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -54,7 +66,7 @@ func (s *ToDoStorage) GetAll() []models.Todo {
 }
 
 // GetByID возвращает объект по его ID.
-func (s *ToDoStorage) GetByID(id int) (models.Todo, error) {
+func (s *TodoStorage) GetByID(id int) (models.Todo, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -65,7 +77,5 @@ func (s *ToDoStorage) GetByID(id int) (models.Todo, error) {
 
 	return todo, nil
 }
-
-// TODO: func (s *TodoStorage) Update(todo models.ToDo) error {}
 
 // TODO: func (s *TodoStorage) Delete(id int) error {}
