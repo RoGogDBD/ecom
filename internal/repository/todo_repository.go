@@ -2,15 +2,9 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"sync"
 
 	"github.com/RoGogDBD/ecom/internal/models"
-)
-
-var (
-	errDuplicateID = errors.New("todo с данным ID уже существует")
-	errNotFound    = errors.New("todo не найден")
 )
 
 type (
@@ -34,7 +28,7 @@ func (s *TodoStorage) Create(_ context.Context, todo models.Todo) error {
 	defer s.mu.Unlock()
 
 	if _, exists := s.items[todo.ID]; exists {
-		return errDuplicateID
+		return models.ErrDuplicateID
 	}
 
 	s.items[todo.ID] = todo
@@ -47,7 +41,7 @@ func (s *TodoStorage) Update(_ context.Context, todo models.Todo) error {
 	defer s.mu.Unlock()
 
 	if _, exists := s.items[todo.ID]; !exists {
-		return errNotFound
+		return models.ErrNotFound
 	}
 
 	s.items[todo.ID] = todo
@@ -60,7 +54,7 @@ func (s *TodoStorage) Delete(_ context.Context, id int) error {
 	defer s.mu.Unlock()
 
 	if _, exists := s.items[id]; !exists {
-		return errNotFound
+		return models.ErrNotFound
 	}
 
 	delete(s.items, id)
@@ -87,7 +81,7 @@ func (s *TodoStorage) GetByID(_ context.Context, id int) (models.Todo, error) {
 
 	todo, exists := s.items[id]
 	if !exists {
-		return models.Todo{}, errNotFound
+		return models.Todo{}, models.ErrNotFound
 	}
 
 	return todo, nil

@@ -2,15 +2,9 @@ package service
 
 import (
 	"context"
-	"errors"
 	"strings"
 
 	"github.com/RoGogDBD/ecom/internal/models"
-)
-
-var (
-	errInvalidID  = errors.New("id должен быть положительным числом")
-	errEmptyTitle = errors.New("title не может быть пустым")
 )
 
 type (
@@ -38,10 +32,33 @@ func (s *TodoService) Create(ctx context.Context, todo models.Todo) error {
 	return s.storage.Create(ctx, todo)
 }
 
-// TODO: func (s *TodoService) Update(ctx context.Context, todo models.Todo) error {}.
-// TODO: func (s *TodoService) Delete(ctx context.Context, id int) error {}.
-// TODO: func (s *TodoService) GetAll(ctx context.Context) []models.Todo {}.
-// TODO: func (s *TodoService) GetByID(ctx context.Context, id int) (models.Todo, error) {}.
+func (s *TodoService) Update(ctx context.Context, todo models.Todo) error {
+	if err := validateTodo(todo); err != nil {
+		return err
+	}
+
+	return s.storage.Update(ctx, todo)
+}
+
+func (s *TodoService) Delete(ctx context.Context, id int) error {
+	if id <= 0 {
+		return models.ErrInvalidID
+	}
+
+	return s.storage.Delete(ctx, id)
+}
+
+func (s *TodoService) GetAll(ctx context.Context) ([]models.Todo, error) {
+	return s.storage.GetAll(ctx)
+}
+
+func (s *TodoService) GetByID(ctx context.Context, id int) (models.Todo, error) {
+	if id <= 0 {
+		return models.Todo{}, models.ErrInvalidID
+	}
+
+	return s.storage.GetByID(ctx, id)
+}
 
 // ******************
 // Хелпующие функции.
@@ -50,11 +67,11 @@ func (s *TodoService) Create(ctx context.Context, todo models.Todo) error {
 // validateTodo проверяет корректность данных.
 func validateTodo(todo models.Todo) error {
 	if todo.ID <= 0 {
-		return errInvalidID
+		return models.ErrInvalidID
 	}
 
 	if strings.TrimSpace(todo.Title) == "" {
-		return errEmptyTitle
+		return models.ErrEmptyTitle
 	}
 
 	return nil
