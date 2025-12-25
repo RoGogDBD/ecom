@@ -13,7 +13,7 @@ var (
 )
 
 type (
-	// TodoStorage потокобезопасное хранилище для объектов models.Todo.
+	// TodoStorage потокобезопасное хранилище для объектов.
 	TodoStorage struct {
 		mu    sync.RWMutex
 		items map[int]models.Todo
@@ -40,6 +40,7 @@ func (s *TodoStorage) Create(todo models.Todo) error {
 	return nil
 }
 
+// Update обновляет существующий объект в хранилище.
 func (s *TodoStorage) Update(todo models.Todo) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -49,6 +50,19 @@ func (s *TodoStorage) Update(todo models.Todo) error {
 	}
 
 	s.items[todo.ID] = todo
+	return nil
+}
+
+// Delete удаляет объект из хранилища по его ID.
+func (s *TodoStorage) Delete(id int) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if _, exists := s.items[id]; !exists {
+		return errNotFound
+	}
+
+	delete(s.items, id)
 	return nil
 }
 
@@ -77,5 +91,3 @@ func (s *TodoStorage) GetByID(id int) (models.Todo, error) {
 
 	return todo, nil
 }
-
-// TODO: func (s *TodoStorage) Delete(id int) error {}
