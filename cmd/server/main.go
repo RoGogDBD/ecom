@@ -33,10 +33,14 @@ func run() error {
 	storage := repository.NewTodoStorage()
 	todoService := service.NewTodoService(storage)
 	router := handler.NewRouter(todoService)
+	httpHandler := handler.Conveyor(
+		router,
+		handler.LoggingMiddleware(log.Default()),
+	)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port),
-		Handler: router,
+		Handler: httpHandler,
 	}
 
 	sigChan := make(chan os.Signal, 1)
