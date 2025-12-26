@@ -12,6 +12,9 @@ import (
 	"time"
 
 	"github.com/RoGogDBD/ecom/internal/config"
+	"github.com/RoGogDBD/ecom/internal/handler"
+	"github.com/RoGogDBD/ecom/internal/repository"
+	"github.com/RoGogDBD/ecom/internal/service"
 )
 
 func main() {
@@ -27,9 +30,13 @@ func run() error {
 		return fmt.Errorf("could not load config: %w", err)
 	}
 
+	storage := repository.NewTodoStorage()
+	todoService := service.NewTodoService(storage)
+	router := handler.NewRouter(todoService)
+
 	srv := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port),
-		Handler: nil,
+		Handler: router,
 	}
 
 	sigChan := make(chan os.Signal, 1)
