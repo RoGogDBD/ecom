@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	defaultHost = "0.0.0.0"
+	defaultHost = "localhost"
 	defaultPort = 8080
 
 	envServerHost = "SERVER_HOST"
