@@ -58,7 +58,6 @@ func TestConfig_overrideFromEnv(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Сохраняем оригинальные значения
 			origHost := os.Getenv(envServerHost)
 			origPort := os.Getenv(envServerPort)
 			defer func() {
@@ -66,7 +65,6 @@ func TestConfig_overrideFromEnv(t *testing.T) {
 				_ = os.Setenv(envServerPort, origPort)
 			}()
 
-			// Устанавливаем тестовые значения
 			if tt.envHost != "" {
 				_ = os.Setenv(envServerHost, tt.envHost)
 			} else {
