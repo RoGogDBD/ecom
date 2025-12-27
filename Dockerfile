@@ -12,7 +12,8 @@ FROM alpine:3.20
 WORKDIR /app
 COPY --from=build /out/server /app/server
 
-ENV SERVER_HOST=localhost
+ENV SERVER_HOST=0.0.0.0
+ENV SERVER_PORT=8080
 EXPOSE 8080
 
 ENTRYPOINT ["/app/server"]
