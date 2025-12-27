@@ -40,10 +40,10 @@ func (r *Router) handleTodoByID(w http.ResponseWriter, req *http.Request) {
 // @Tags todos
 // @Accept json
 // @Produce json
-// @Param todo body Todo true "Todo"
-// @Success 201 {object} Todo
-// @Failure 400 {object} ErrorResponse
-// @Failure 409 {object} ErrorResponse
+// @Param todo body models.Todo true "Данные задачи"
+// @Success 201 {object} models.Todo
+// @Failure 400 {object} map[string]string
+// @Failure 409 {object} map[string]string
 // @Router /todos [post]
 func (r *Router) handleCreate(w http.ResponseWriter, req *http.Request) {
 	todo, err := decodeTodo(req)
@@ -63,7 +63,7 @@ func (r *Router) handleCreate(w http.ResponseWriter, req *http.Request) {
 // @Summary Получить список всех задач
 // @Tags todos
 // @Produce json
-// @Success 200 {array} Todo
+// @Success 200 {array} models.Todo
 // @Router /todos [get]
 func (r *Router) handleGetAll(w http.ResponseWriter, req *http.Request) {
 	items, err := r.service.GetAll(req.Context())
@@ -78,9 +78,9 @@ func (r *Router) handleGetAll(w http.ResponseWriter, req *http.Request) {
 // @Summary Получить задачу по ID
 // @Tags todos
 // @Produce json
-// @Param id path int true "Todo ID"
-// @Success 200 {object} Todo
-// @Failure 404 {object} ErrorResponse
+// @Param id path int true "ID задачи"
+// @Success 200 {object} models.Todo
+// @Failure 404 {object} map[string]string
 // @Router /todos/{id} [get]
 func (r *Router) handleGetByID(w http.ResponseWriter, req *http.Request, id int) {
 	item, err := r.service.GetByID(req.Context(), id)
@@ -96,11 +96,11 @@ func (r *Router) handleGetByID(w http.ResponseWriter, req *http.Request, id int)
 // @Tags todos
 // @Accept json
 // @Produce json
-// @Param todo body Todo true "Todo"
-// @Param id path int true "Todo ID"
-// @Success 200 {object} Todo
-// @Failure 400 {object} ErrorResponse
-// @Failure 404 {object} ErrorResponse
+// @Param id path int true "ID задачи"
+// @Param todo body models.Todo true "Данные задачи"
+// @Success 200 {object} models.Todo
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
 // @Router /todos/{id} [put]
 func (r *Router) handleUpdate(w http.ResponseWriter, req *http.Request, id int) {
 	todo, err := decodeTodo(req)
@@ -120,9 +120,10 @@ func (r *Router) handleUpdate(w http.ResponseWriter, req *http.Request, id int) 
 
 // @Summary Удалить задачу по ID
 // @Tags todos
-// @Param id path int true "Todo ID"
-// @Success 204
-// @Failure 404 {object} ErrorResponse
+// @Produce json
+// @Param id path int true "ID задачи"
+// @Success 204 "Задача успешно удалена"
+// @Failure 404 {object} map[string]string
 // @Router /todos/{id} [delete]
 func (r *Router) handleDelete(w http.ResponseWriter, req *http.Request, id int) {
 	if err := r.service.Delete(req.Context(), id); err != nil {
