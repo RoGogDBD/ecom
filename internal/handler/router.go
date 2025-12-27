@@ -27,6 +27,7 @@ func NewRouter(service TodoService) http.Handler {
 
 	mux.HandleFunc("/todos", r.handleTodos)
 	mux.HandleFunc("/todos/", r.handleTodoByID)
+	mux.HandleFunc("/swagger.json", swaggerHandler)
 
 	return mux
 }
