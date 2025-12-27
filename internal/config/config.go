@@ -90,9 +90,11 @@ func (c *Config) overrideFromEnv() error {
 	}
 
 	if portStr := os.Getenv(envServerPort); portStr != "" {
-		if port, err := strconv.Atoi(portStr); err == nil {
-			c.Server.Port = port
+		port, err := strconv.Atoi(portStr)
+		if err != nil {
+			return fmt.Errorf("failed to parse %s: %w", envServerPort, err)
 		}
+		c.Server.Port = port
 	}
 
 	return nil
