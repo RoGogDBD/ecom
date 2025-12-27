@@ -36,6 +36,15 @@ func (r *Router) handleTodoByID(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+// @Summary Создать задачу
+// @Tags todos
+// @Accept json
+// @Produce json
+// @Param todo body Todo true "Todo"
+// @Success 201 {object} Todo
+// @Failure 400 {object} ErrorResponse
+// @Failure 409 {object} ErrorResponse
+// @Router /todos [post]
 func (r *Router) handleCreate(w http.ResponseWriter, req *http.Request) {
 	todo, err := decodeTodo(req)
 	if err != nil {
@@ -51,6 +60,11 @@ func (r *Router) handleCreate(w http.ResponseWriter, req *http.Request) {
 	writeJSON(w, http.StatusCreated, todo)
 }
 
+// @Summary Получить список всех задач
+// @Tags todos
+// @Produce json
+// @Success 200 {array} Todo
+// @Router /todos [get]
 func (r *Router) handleGetAll(w http.ResponseWriter, req *http.Request) {
 	items, err := r.service.GetAll(req.Context())
 	if err != nil {
@@ -61,6 +75,13 @@ func (r *Router) handleGetAll(w http.ResponseWriter, req *http.Request) {
 	writeJSON(w, http.StatusOK, items)
 }
 
+// @Summary Получить задачу по ID
+// @Tags todos
+// @Produce json
+// @Param id path int true "Todo ID"
+// @Success 200 {object} Todo
+// @Failure 404 {object} ErrorResponse
+// @Router /todos/{id} [get]
 func (r *Router) handleGetByID(w http.ResponseWriter, req *http.Request, id int) {
 	item, err := r.service.GetByID(req.Context(), id)
 	if err != nil {
@@ -71,6 +92,16 @@ func (r *Router) handleGetByID(w http.ResponseWriter, req *http.Request, id int)
 	writeJSON(w, http.StatusOK, item)
 }
 
+// @Summary Обновить задачу по ID
+// @Tags todos
+// @Accept json
+// @Produce json
+// @Param todo body Todo true "Todo"
+// @Param id path int true "Todo ID"
+// @Success 200 {object} Todo
+// @Failure 400 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Router /todos/{id} [put]
 func (r *Router) handleUpdate(w http.ResponseWriter, req *http.Request, id int) {
 	todo, err := decodeTodo(req)
 	if err != nil {
@@ -87,6 +118,12 @@ func (r *Router) handleUpdate(w http.ResponseWriter, req *http.Request, id int) 
 	writeJSON(w, http.StatusOK, todo)
 }
 
+// @Summary Удалить задачу по ID
+// @Tags todos
+// @Param id path int true "Todo ID"
+// @Success 204
+// @Failure 404 {object} ErrorResponse
+// @Router /todos/{id} [delete]
 func (r *Router) handleDelete(w http.ResponseWriter, req *http.Request, id int) {
 	if err := r.service.Delete(req.Context(), id); err != nil {
 		writeServiceError(w, err)
@@ -94,4 +131,12 @@ func (r *Router) handleDelete(w http.ResponseWriter, req *http.Request, id int) 
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func swaggerHandler(w http.ResponseWriter, req *http.Request) {
+	if req.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
 }
