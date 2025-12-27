@@ -1,14 +1,7 @@
 package handler
 
 import (
-	"encoding/json"
-	"errors"
-	"io"
 	"net/http"
-	"strconv"
-	"strings"
-
-	"github.com/RoGogDBD/ecom/internal/models"
 )
 
 const notFoundMessage = "todo not found"
@@ -101,63 +94,4 @@ func (r *Router) handleDelete(w http.ResponseWriter, req *http.Request, id int) 
 	}
 
 	w.WriteHeader(http.StatusNoContent)
-}
-
-// ******************
-// Хелпующие функции.
-// ******************
-
-func parseID(path string) (int, bool) {
-	trimmed := strings.TrimPrefix(path, "/todos/")
-	if trimmed == "" || strings.Contains(trimmed, "/") {
-		return 0, false
-	}
-
-	id, err := strconv.Atoi(trimmed)
-	if err != nil {
-		return 0, false
-	}
-
-	return id, true
-}
-
-func decodeTodo(req *http.Request) (models.Todo, error) {
-	defer req.Body.Close()
-
-	dec := json.NewDecoder(req.Body)
-	dec.DisallowUnknownFields()
-
-	var todo models.Todo
-	if err := dec.Decode(&todo); err != nil {
-		return models.Todo{}, err
-	}
-
-	if err := dec.Decode(&struct{}{}); !errors.Is(err, io.EOF) {
-		return models.Todo{}, errors.New("invalid JSON payload")
-	}
-
-	return todo, nil
-}
-
-func writeServiceError(w http.ResponseWriter, err error) {
-	switch {
-	case errors.Is(err, models.ErrInvalidID), errors.Is(err, models.ErrEmptyTitle):
-		writeError(w, http.StatusBadRequest, err.Error())
-	case errors.Is(err, models.ErrDuplicateID):
-		writeError(w, http.StatusConflict, err.Error())
-	case errors.Is(err, models.ErrNotFound):
-		writeError(w, http.StatusNotFound, err.Error())
-	default:
-		writeError(w, http.StatusInternalServerError, "internal server error")
-	}
-}
-
-func writeError(w http.ResponseWriter, status int, message string) {
-	writeJSON(w, status, map[string]string{"error": message})
-}
-
-func writeJSON(w http.ResponseWriter, status int, payload any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(payload)
 }
