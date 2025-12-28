@@ -1,40 +1,7 @@
-# Binaries
-bin/
-*.exe
-*.dll
-*.so
-*.dylib
-
-# Test binary
+.git
+.idea
+bin
 *.test
-
-# Output of the go coverage tool
 *.out
-
-# Dependency directories
-vendor/
-
-# IDE directories
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-
-# Git
-.git/
-.gitignore
-
-# Docker
-Dockerfile*
-docker-compose*.yml
-.dockerignore
-
-# Documentation
 README.md
 TS.md
-
-# CI/CD
-.github/
-.gitlab-ci.yml
-
