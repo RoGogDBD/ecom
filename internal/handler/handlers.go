@@ -72,6 +72,11 @@ func (r *Router) handleGetAll(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	if len(items) == 0 {
+		writeJSON(w, http.StatusOK, map[string]string{"message": "задач нету"})
+		return
+	}
+
 	writeJSON(w, http.StatusOK, items)
 }
 
