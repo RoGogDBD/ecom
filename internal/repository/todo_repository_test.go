@@ -16,13 +16,13 @@ func TestTodoStorageCreate(t *testing.T) {
 		wantErr error
 	}{
 		{
-			name: "success",
-			todo: models.Todo{ID: 1, Title: "new", Description: "created", Completed: false},
+			name: "успешное создание",
+			todo: models.Todo{ID: 1, Title: "новая", Description: "создана", Completed: false},
 		},
 		{
-			name:    "duplicate id",
-			initial: []models.Todo{{ID: 1, Title: "existing"}},
-			todo:    models.Todo{ID: 1, Title: "duplicate"},
+			name:    "дубликат id",
+			initial: []models.Todo{{ID: 1, Title: "существующая"}},
+			todo:    models.Todo{ID: 1, Title: "дубликат"},
 			wantErr: models.ErrDuplicateID,
 		},
 	}
@@ -34,22 +34,22 @@ func TestTodoStorageCreate(t *testing.T) {
 			ctx := context.Background()
 			for _, item := range tc.initial {
 				if err := storage.Create(ctx, item); err != nil {
-					t.Fatalf("setup create failed: %v", err)
+					t.Fatalf("ошибка подготовки данных: %v", err)
 				}
 			}
 
 			err := storage.Create(ctx, tc.todo)
 			if !errors.Is(err, tc.wantErr) {
-				t.Fatalf("expected error %v, got %v", tc.wantErr, err)
+				t.Fatalf("ожидалась ошибка %v, получено %v", tc.wantErr, err)
 			}
 
 			if tc.wantErr == nil {
 				got, err := storage.GetByID(ctx, tc.todo.ID)
 				if err != nil {
-					t.Fatalf("expected stored todo, got error: %v", err)
+					t.Fatalf("ожидалась сохраненная задача, получена ошибка: %v", err)
 				}
 				if got != tc.todo {
-					t.Fatalf("expected todo %+v, got %+v", tc.todo, got)
+					t.Fatalf("ожидалась задача %+v, получено %+v", tc.todo, got)
 				}
 			}
 		})

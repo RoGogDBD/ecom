@@ -28,31 +28,31 @@ func TestParseOptions(t *testing.T) {
 		want     string
 	}{
 		{
-			name:     "default empty",
+			name:     "по умолчанию пусто",
 			args:     []string{"cmd"},
 			envValue: "",
 			want:     "",
 		},
 		{
-			name:     "config from env",
+			name:     "конфиг из env",
 			args:     []string{"cmd"},
 			envValue: "/tmp/config.json",
 			want:     "/tmp/config.json",
 		},
 		{
-			name:     "short flag",
+			name:     "короткий флаг",
 			args:     []string{"cmd", "-c", "/etc/app.json"},
 			envValue: "/tmp/config.json",
 			want:     "/etc/app.json",
 		},
 		{
-			name:     "long flag",
+			name:     "длинный флаг",
 			args:     []string{"cmd", "-config", "/etc/app.json"},
 			envValue: "",
 			want:     "/etc/app.json",
 		},
 		{
-			name:     "flag overrides env",
+			name:     "флаг перекрывает env",
 			args:     []string{"cmd", "-config", "/etc/app.json"},
 			envValue: "/tmp/config.json",
 			want:     "/etc/app.json",
@@ -73,7 +73,7 @@ func TestParseOptions(t *testing.T) {
 
 			got := parseOptions()
 			if got != tt.want {
-				t.Fatalf("expected %q, got %q", tt.want, got)
+				t.Fatalf("ожидалось %q, получено %q", tt.want, got)
 			}
 		})
 	}

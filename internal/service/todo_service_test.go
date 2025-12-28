@@ -46,23 +46,23 @@ func TestTodoServiceCreate(t *testing.T) {
 		wantCreateCalls int
 	}{
 		{
-			name:            "success",
-			todo:            models.Todo{ID: 1, Title: "ship order", Description: "pack items", Completed: false},
+			name:            "успешное создание",
+			todo:            models.Todo{ID: 1, Title: "отправить заказ", Description: "упаковать товары", Completed: false},
 			wantCreateCalls: 1,
 		},
 		{
-			name:    "validation error empty title",
-			todo:    models.Todo{ID: 2, Title: "  ", Description: "missing title"},
+			name:    "ошибка валидации: пустой заголовок",
+			todo:    models.Todo{ID: 2, Title: "  ", Description: "нет заголовка"},
 			wantErr: models.ErrEmptyTitle,
 		},
 		{
-			name:    "validation error invalid id",
-			todo:    models.Todo{ID: 0, Title: "title"},
+			name:    "ошибка валидации: неверный id",
+			todo:    models.Todo{ID: 0, Title: "заголовок"},
 			wantErr: models.ErrInvalidID,
 		},
 		{
-			name:            "duplicate id",
-			todo:            models.Todo{ID: 3, Title: "duplicate"},
+			name:            "дубликат id",
+			todo:            models.Todo{ID: 3, Title: "дубликат"},
 			createErr:       models.ErrDuplicateID,
 			wantErr:         models.ErrDuplicateID,
 			wantCreateCalls: 1,
@@ -79,10 +79,10 @@ func TestTodoServiceCreate(t *testing.T) {
 
 			err := service.Create(context.Background(), tc.todo)
 			if !errors.Is(err, tc.wantErr) {
-				t.Fatalf("expected error %v, got %v", tc.wantErr, err)
+				t.Fatalf("ожидалась ошибка %v, получено %v", tc.wantErr, err)
 			}
 			if storage.createCalls != tc.wantCreateCalls {
-				t.Fatalf("expected create calls %d, got %d", tc.wantCreateCalls, storage.createCalls)
+				t.Fatalf("ожидалось вызовов создания %d, получено %d", tc.wantCreateCalls, storage.createCalls)
 			}
 		})
 	}
@@ -97,23 +97,23 @@ func TestTodoServiceUpdate(t *testing.T) {
 		wantUpdateCalls int
 	}{
 		{
-			name:            "success",
-			todo:            models.Todo{ID: 1, Title: "rename", Description: "new", Completed: true},
+			name:            "успешное обновление",
+			todo:            models.Todo{ID: 1, Title: "переименовать", Description: "новое", Completed: true},
 			wantUpdateCalls: 1,
 		},
 		{
-			name:    "validation error empty title",
+			name:    "ошибка валидации: пустой заголовок",
 			todo:    models.Todo{ID: 2, Title: ""},
 			wantErr: models.ErrEmptyTitle,
 		},
 		{
-			name:    "validation error invalid id",
-			todo:    models.Todo{ID: -1, Title: "title"},
+			name:    "ошибка валидации: неверный id",
+			todo:    models.Todo{ID: -1, Title: "заголовок"},
 			wantErr: models.ErrInvalidID,
 		},
 		{
-			name:            "not found",
-			todo:            models.Todo{ID: 3, Title: "missing"},
+			name:            "не найдено",
+			todo:            models.Todo{ID: 3, Title: "нет записи"},
 			updateErr:       models.ErrNotFound,
 			wantErr:         models.ErrNotFound,
 			wantUpdateCalls: 1,
@@ -130,10 +130,10 @@ func TestTodoServiceUpdate(t *testing.T) {
 
 			err := service.Update(context.Background(), tc.todo)
 			if !errors.Is(err, tc.wantErr) {
-				t.Fatalf("expected error %v, got %v", tc.wantErr, err)
+				t.Fatalf("ожидалась ошибка %v, получено %v", tc.wantErr, err)
 			}
 			if storage.updateCalls != tc.wantUpdateCalls {
-				t.Fatalf("expected update calls %d, got %d", tc.wantUpdateCalls, storage.updateCalls)
+				t.Fatalf("ожидалось вызовов обновления %d, получено %d", tc.wantUpdateCalls, storage.updateCalls)
 			}
 		})
 	}

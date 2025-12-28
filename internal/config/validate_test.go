@@ -16,7 +16,7 @@ func TestConfig_validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "empty host",
+			name: "пустой host",
 			config: &Config{
 				Server: ServerConfig{
 					Host: "",
@@ -26,7 +26,7 @@ func TestConfig_validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "zero port",
+			name: "нулевой порт",
 			config: &Config{
 				Server: ServerConfig{
 					Host: "localhost",
@@ -36,7 +36,7 @@ func TestConfig_validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "negative port",
+			name: "<0 порт",
 			config: &Config{
 				Server: ServerConfig{
 					Host: "localhost",
@@ -46,7 +46,7 @@ func TestConfig_validate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "valid config",
+			name: "валидный конфиг",
 			config: &Config{
 				Server: ServerConfig{
 					Host: "localhost",
@@ -61,7 +61,7 @@ func TestConfig_validate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.config.validate()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("validate() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("validate() ошибка = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

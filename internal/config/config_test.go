@@ -13,11 +13,11 @@ func TestNewDefault(t *testing.T) {
 	}
 
 	if cfg.Server.Host != defaultHost {
-		t.Errorf("expected host %q, got %q", defaultHost, cfg.Server.Host)
+		t.Errorf("ожидался host %q, получено %q", defaultHost, cfg.Server.Host)
 	}
 
 	if cfg.Server.Port != defaultPort {
-		t.Errorf("expected port %d, got %d", defaultPort, cfg.Server.Port)
+		t.Errorf("ожидался port %d, получено %d", defaultPort, cfg.Server.Port)
 	}
 }
 
@@ -31,7 +31,7 @@ func TestConfig_overrideFromEnv(t *testing.T) {
 		wantErr  bool
 	}{
 		{
-			name:     "no env vars",
+			name:     "нет переменных окружения",
 			envHost:  "",
 			envPort:  "",
 			wantHost: defaultHost,
@@ -39,7 +39,7 @@ func TestConfig_overrideFromEnv(t *testing.T) {
 			wantErr:  false,
 		},
 		{
-			name:     "valid env vars",
+			name:     "валидные переменные окружения",
 			envHost:  "127.0.0.1",
 			envPort:  "9090",
 			wantHost: "127.0.0.1",
@@ -47,7 +47,7 @@ func TestConfig_overrideFromEnv(t *testing.T) {
 			wantErr:  false,
 		},
 		{
-			name:     "invalid port",
+			name:     "невалидный порт",
 			envHost:  "127.0.0.1",
 			envPort:  "invalid",
 			wantHost: "127.0.0.1",
@@ -80,16 +80,16 @@ func TestConfig_overrideFromEnv(t *testing.T) {
 			err := cfg.overrideFromEnv()
 
 			if (err != nil) != tt.wantErr {
-				t.Errorf("overrideFromEnv() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("overrideFromEnv() ошибка = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
 			if !tt.wantErr {
 				if cfg.Server.Host != tt.wantHost {
-					t.Errorf("expected host %q, got %q", tt.wantHost, cfg.Server.Host)
+					t.Errorf("ожидался host %q, получено %q", tt.wantHost, cfg.Server.Host)
 				}
 				if cfg.Server.Port != tt.wantPort {
-					t.Errorf("expected port %d, got %d", tt.wantPort, cfg.Server.Port)
+					t.Errorf("ожидался port %d, получено %d", tt.wantPort, cfg.Server.Port)
 				}
 			}
 		})
