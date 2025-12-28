@@ -2,7 +2,7 @@ APP_NAME := ecom
 BIN_DIR := bin
 IMAGE_NAME := ecom-server
 
-.PHONY: build run test clean docker-build docker-up docker-down docker-logs docker-clean
+.PHONY: build run test lint coverage clean docker-build docker-up docker-down docker-logs docker-clean
 
 build:
 	go build -o $(BIN_DIR)/$(APP_NAME) ./cmd/server
@@ -12,6 +12,15 @@ run: build
 
 test:
 	go test ./...
+
+lint:
+	go vet ./...
+	gofmt -l .
+
+coverage:
+	go test -coverprofile=coverage.out ./...
+	go tool cover -func=coverage.out
+
 
 clean:
 	rm -rf $(BIN_DIR)
@@ -33,4 +42,3 @@ docker-clean:
 	docker compose down -v
 	docker rmi $(IMAGE_NAME):latest || true
 	docker system prune -f
-
