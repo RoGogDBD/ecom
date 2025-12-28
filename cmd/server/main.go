@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,6 +12,7 @@ import (
 
 	"github.com/RoGogDBD/ecom/internal/config"
 	"github.com/RoGogDBD/ecom/internal/handler"
+	"github.com/RoGogDBD/ecom/internal/logger"
 	"github.com/RoGogDBD/ecom/internal/repository"
 	"github.com/RoGogDBD/ecom/internal/service"
 )
@@ -20,6 +20,7 @@ import (
 const (
 	errServerShutdown = "server shutdown failed"
 	errLoadConfig     = "could not load config"
+	errInitLogger     = "could not initialize logger"
 
 	logServerStart = "Starting server on %s"
 	logServerStop  = "Server stopped"
@@ -32,12 +33,17 @@ const (
 
 func main() {
 	if err := run(); err != nil {
-		fmt.Fprintf(os.Stderr, logCriticalErr, err)
+		_, _ = fmt.Fprintf(os.Stderr, logCriticalErr, err)
 		os.Exit(1)
 	}
 }
 
 func run() error {
+	appLogger, err := logger.New()
+	if err != nil {
+		return fmt.Errorf("%s: %w", errInitLogger, err)
+	}
+
 	cfg, err := config.Load()
 	if err != nil {
 		return fmt.Errorf("%s: %w", errLoadConfig, err)
@@ -48,7 +54,7 @@ func run() error {
 	router := handler.NewRouter(todoService)
 	httpHandler := handler.Conveyor(
 		router,
-		handler.LoggingMiddleware(log.Default()),
+		handler.LoggingMiddleware(appLogger),
 	)
 
 	srv := &http.Server{
@@ -60,14 +66,14 @@ func run() error {
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 
 	go func() {
-		log.Printf(logServerStart, srv.Addr)
+		appLogger.Printf(logServerStart, srv.Addr)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Printf(logHTTPError, err)
+			appLogger.Printf(logHTTPError, err)
 		}
 	}()
 
 	<-sigChan
-	log.Println(logShutdown)
+	appLogger.Println(logShutdown)
 
 	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()
@@ -76,6 +82,6 @@ func run() error {
 		return fmt.Errorf("%s: %w", errServerShutdown, err)
 	}
 
-	log.Println(logServerStop)
+	appLogger.Println(logServerStop)
 	return nil
 }

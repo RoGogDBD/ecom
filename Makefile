@@ -21,16 +21,16 @@ docker-build:
 	docker build -t $(IMAGE_NAME):latest .
 
 docker-up:
-	docker-compose up -d --build
+	docker compose up -d --build
 
 docker-down:
-	docker-compose down
+	docker compose down
 
 docker-logs:
-	docker-compose logs -f
+	docker compose logs -f
 
 docker-clean:
-	docker-compose down -v
+	docker compose down -v
 	docker rmi $(IMAGE_NAME):latest || true
 	docker system prune -f
 
