@@ -17,9 +17,22 @@ import (
 	"github.com/RoGogDBD/ecom/internal/service"
 )
 
+const (
+	errServerShutdown = "server shutdown failed"
+	errLoadConfig     = "could not load config"
+
+	logServerStart = "Starting server on %s"
+	logServerStop  = "Server stopped"
+	logShutdown    = "Shutting down gracefully..."
+	logHTTPError   = "HTTP server error: %v"
+	logCriticalErr = "critical error: %v"
+
+	shutdownTimeout = 10 * time.Second
+)
+
 func main() {
 	if err := run(); err != nil {
-		fmt.Fprintf(os.Stderr, "critical error: %v\n", err)
+		fmt.Fprintf(os.Stderr, logCriticalErr, err)
 		os.Exit(1)
 	}
 }
@@ -27,7 +40,7 @@ func main() {
 func run() error {
 	cfg, err := config.Load()
 	if err != nil {
-		return fmt.Errorf("could not load config: %w", err)
+		return fmt.Errorf("%s: %w", errLoadConfig, err)
 	}
 
 	storage := repository.NewTodoStorage()
@@ -47,22 +60,22 @@ func run() error {
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 
 	go func() {
-		log.Printf("Starting server on %s", srv.Addr)
+		log.Printf(logServerStart, srv.Addr)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Printf("HTTP server error: %v", err)
+			log.Printf(logHTTPError, err)
 		}
 	}()
 
 	<-sigChan
-	log.Println("Shutting down gracefully...")
+	log.Println(logShutdown)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		return fmt.Errorf("server shutdown failed: %w", err)
+		return fmt.Errorf("%s: %w", errServerShutdown, err)
 	}
 
-	log.Println("Server stopped")
+	log.Println(logServerStop)
 	return nil
 }
