@@ -102,10 +102,10 @@ func (r *Router) handleDelete(w http.ResponseWriter, req *http.Request, id int) 
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func swaggerHandler(w http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
+// func swaggerHandler(w http.ResponseWriter, req *http.Request) {
+// 	if req.Method != http.MethodGet {
+// 		w.WriteHeader(http.StatusMethodNotAllowed)
+// 		return
+// 	}
 
-}
+// }
