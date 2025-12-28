@@ -11,9 +11,8 @@ FROM alpine:3.20
 
 WORKDIR /app
 COPY --from=build /out/server /app/server
+COPY config.json /app/config.json
 
-ENV SERVER_HOST=0.0.0.0
-ENV SERVER_PORT=8080
 EXPOSE 8080
 
-ENTRYPOINT ["/app/server"]
+ENTRYPOINT ["/app/server", "-config", "/app/config.json"]
