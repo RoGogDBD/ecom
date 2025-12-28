@@ -2,6 +2,8 @@ package handler
 
 import (
 	"net/http"
+
+	"github.com/RoGogDBD/ecom/internal/models"
 )
 
 const notFoundMessage = "todo not found"
@@ -72,9 +74,8 @@ func (r *Router) handleGetAll(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if len(items) == 0 {
-		writeJSON(w, http.StatusOK, map[string]string{"message": "задач нету"})
-		return
+	if items == nil {
+		items = []models.Todo{}
 	}
 
 	writeJSON(w, http.StatusOK, items)
