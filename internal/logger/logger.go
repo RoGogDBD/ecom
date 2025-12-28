@@ -32,7 +32,6 @@ func New() (*log.Logger, error) {
 		return nil, err
 	}
 
-	// Создаем MultiWriter для записи одновременно в stdout и файл
 	multiWriter := io.MultiWriter(os.Stdout, logFile)
 	logger := log.New(multiWriter, "", logFlags)
 
