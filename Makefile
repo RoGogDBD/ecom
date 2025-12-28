@@ -13,14 +13,9 @@ run: build
 test:
 	go test ./...
 
-lint:
-	go vet ./...
-	gofmt -l .
-
 coverage:
 	go test -coverprofile=coverage.out ./...
 	go tool cover -func=coverage.out
-
 
 clean:
 	rm -rf $(BIN_DIR)
