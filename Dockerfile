@@ -13,6 +13,4 @@ WORKDIR /app
 COPY --from=build /out/server /app/server
 COPY config.json /app/config.json
 
-EXPOSE 8080
-
 ENTRYPOINT ["/app/server", "-config", "/app/config.json"]
